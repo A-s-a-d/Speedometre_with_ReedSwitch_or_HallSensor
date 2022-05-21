@@ -1,0 +1,37 @@
+unsigned long startMillis;	  	 //variable temps debut sur 32bit
+unsigned long currentMillis;	 //variable temps actuel sur 32bit
+const unsigned long period;	//variable constant pour la periode de 1ms
+int magnetstate=0;			//variable état de capteur est initialement à 0
+int laststate=1;			//variable dour dernier état de capteur détectée
+int sensor=3;			   	//variable sensor(capteur) est sur port 3
+int counter=0;			//variable pour compter les nombre des tours
+float speed;				//variable vitesse avec les valeurs après la virgule
+float radius=0.05;   			//rayon de roue en m
+float pi=3.14;			//valeur de pi
+float circumference =2*radius*pi;          //variable pour le périmètre de roue
+
+void setup(){
+	Serial.begin(115200);		//démarrer le moniteur série
+	startMillis=millis();  		//démarrer le temps de début
+	pinMode(sensor,INPUT)                          //déclarer le capteur comme un entrée
+
+void loop(){
+  currentMillis=millis();		       	 //démarrer le temps actuel
+  magnetstate=digitalRead(sensor);       //lire l'état de capteur sur variable sensor port 3
+  if(magnetstate==0 && laststate==1){   // condition si aimant est détectée et si le dernier état de capteur etait 1
+    laststate=0;			           //mettre la valeur de dernier etat a 0
+    if(currentMillis-startMillis>=period & laststate==0){	   //si le temps passer entre les detection est de 1ms et si dernier etat est 0
+      speed=circumference/(currentMillis-startMillis)*1000     //calculer la vitesse en m/s 
+      stattMillis=currentMillis;					   //metter temps de début égal au temps actuel  
+      counter++ 						   //compter les nombres des tours ( si on veut afficher les nbr des tour pour vérifier)
+      Serial.print(string(speed)+"m/s");			   //imprimer la vitesse en m/s
+    }
+  }
+  else{								   //les les conditions d’avant faux
+    if(currentMillis-startMillis>=period && laststate==0){	//condition si  period est passé entre le temps de début et actuel et si le dernier état d'aimant est 0
+
+      startMillis=currentMillis;					   //metter temps de début égal au temps actuel  
+      laststate=1;						   //mettre la valeur de dernier etat a 0
+    }
+}
+
